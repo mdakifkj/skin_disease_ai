@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Overview - Skin Disease AI Research{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="p-5 mb-4 bg-white rounded-4 shadow-sm border">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">
+                    <i class="bi bi-mortarboard-fill"></i>
+                    <span class="small fw-semibold">Academic Deep Learning Project</span>
+                </div>
+                <h1 class="display-5 fw-bold text-dark mb-3">AI-Based Skin Disease Detection & Severity Prediction</h1>
+                <p class="lead text-secondary mb-4">
+                    An explainable computer vision framework leveraging Transfer Learning (EfficientNetB0), dual-branch classification (Disease & Severity), and Grad-CAM visual interpretability for dermatological research.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('detect') }}" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-cloud-arrow-up-fill me-2"></i>Analyze Skin Image
+                    </a>
+                    <a href="{{ url_for('about') }}" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                        <i class="bi bi-book-half me-2"></i>Methodology & Architecture
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                <div class="p-4 bg-light rounded-4 border text-start">
+                    <h6 class="fw-bold text-uppercase text-muted small tracking-wide mb-3">
+                        <i class="bi bi-hdd-stack me-1 text-primary"></i> Dataset Status (Local)
+                    </h6>
+                    <ul class="list-unstyled mb-0 small">
+                        <li class="d-flex justify-content-between py-1 border-bottom">
+                            <span>Disease Dataset Images:</span>
+                            <span class="badge bg-secondary">{{ dataset_status.disease_dataset.total_images }} images</span>
+                        </li>
+                        <li class="d-flex justify-content-between py-1 border-bottom">
+                            <span>Severity Dataset Images:</span>
+                            <span class="badge bg-secondary">{{ dataset_status.severity_dataset.total_images }} images</span>
+                        </li>
+                        <li class="d-flex justify-content-between py-1 border-bottom">
+                            <span>Disease Model Weights:</span>
+                            <span class="badge {% if disease_model_loaded %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                {% if disease_model_loaded %}Ready / Loaded{% else %}Pending Training{% endif %}
+                            </span>
+                        </li>
+                        <li class="d-flex justify-content-between py-1">
+                            <span>Severity Model Weights:</span>
+                            <span class="badge {% if severity_model_loaded %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                {% if severity_model_loaded %}Ready / Loaded{% else %}Pending Training{% endif %}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical Disclaimer Banner Card -->
+    <div class="card border-warning bg-warning bg-opacity-10 mb-4 shadow-sm">
+        <div class="card-body p-4">
+            <div class="d-flex gap-3 align-items-start">
+                <i class="bi bi-shield-exclamation text-warning fs-2 flex-shrink-0"></i>
+                <div>
+                    <h5 class="fw-bold text-dark mb-1">Ethical & Medical Disclaimer</h5>
+                    <p class="text-secondary small mb-0">
+                        {{ disclaimer }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supported Disease Classes -->
+    <div class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h4 class="fw-bold text-dark mb-0">Target Disease Classes</h4>
+            <span class="badge bg-light text-dark border">7 Target Classes</span>
+        </div>
+        <div class="row g-3">
+            {% for class_key, class_name in disease_classes.items() %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-3 p-3 bg-white hover-shadow transition">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="feature-icon bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-activity fs-5"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1 text-dark">{{ class_name }}</h6>
+                            <code class="text-muted small">class_id: {{ class_key }}</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Project Pipeline Grid -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 rounded-4 p-4 text-center">
+                <div class="rounded-circle bg-info bg-opacity-10 text-info mx-auto p-3 mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-sliders fs-3"></i>
+                </div>
+                <h5 class="fw-bold mb-2">1. Image Pipeline</h5>
+                <p class="text-muted small mb-0">
+                    File integrity verification, dimensions check, RGB conversion, and normalized tensor preprocessing for EfficientNet.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 rounded-4 p-4 text-center">
+                <div class="rounded-circle bg-primary bg-opacity-10 text-primary mx-auto p-3 mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-layers-half fs-3"></i>
+                </div>
+                <h5 class="fw-bold mb-2">2. Dual-Branch AI</h5>
+                <p class="text-muted small mb-0">
+                    Deep transfer learning with EfficientNetB0 for disease classification and a dedicated severity grading branch.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 rounded-4 p-4 text-center">
+                <div class="rounded-circle bg-success bg-opacity-10 text-success mx-auto p-3 mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-eye fs-3"></i>
+                </div>
+                <h5 class="fw-bold mb-2">3. Grad-CAM Explainability</h5>
+                <p class="text-muted small mb-0">
+                    Gradient-weighted Class Activation Mapping to visualize and interpret visual regions informing classification.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

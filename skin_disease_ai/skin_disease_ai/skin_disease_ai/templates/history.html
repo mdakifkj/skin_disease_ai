@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Prediction History - DermaVision AI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1"><i class="bi bi-clock-history text-primary me-2"></i>Analysis History</h3>
+            <p class="text-muted small mb-0">Record log of previous skin image evaluations stored in the local SQLite database.</p>
+        </div>
+        <a href="{{ url_for('detect') }}" class="btn btn-primary rounded-pill btn-sm px-3">
+            <i class="bi bi-plus-lg me-1"></i> New Analysis
+        </a>
+    </div>
+
+    {% if records %}
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Preview</th>
+                        <th>Original File</th>
+                        <th>Predicted Condition</th>
+                        <th>Confidence</th>
+                        <th>Severity</th>
+                        <th>Date & Time</th>
+                        <th class="pe-4 text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-muted">#{{ record.id }}</td>
+                        <td>
+                            <img src="{{ url_for('static', filename='uploads/' + record.filename) }}" alt="Thumbnail" class="rounded border" style="width: 48px; height: 48px; object-fit: cover;">
+                        </td>
+                        <td>
+                            <span class="text-truncate d-inline-block small" style="max-width: 160px;" title="{{ record.original_filename }}">
+                                {{ record.original_filename }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="fw-semibold">{{ record.disease_display_name or 'Pending Model' }}</span>
+                        </td>
+                        <td>
+                            {% if record.disease_confidence is not none %}
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                {{ (record.disease_confidence * 100) | round(1) }}%
+                            </span>
+                            {% else %}
+                            <span class="text-muted small">--</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary-subtle text-secondary">
+                                {{ record.severity_display_name or 'Unspecified' }}
+                            </span>
+                        </td>
+                        <td class="small text-muted">
+                            {{ record.created_at.strftime("%Y-%m-%d %H:%M") }}
+                        </td>
+                        <td class="pe-4 text-end">
+                            <a href="{{ url_for('view_result', record_id=record.id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5 bg-white rounded-4 border shadow-sm">
+        <i class="bi bi-inbox display-4 text-muted mb-3 d-block"></i>
+        <h5 class="fw-bold">No Analysis History Found</h5>
+        <p class="text-muted small mb-3">Upload your first skin lesion image to generate a prediction log.</p>
+        <a href="{{ url_for('detect') }}" class="btn btn-primary rounded-pill px-4">
+            <i class="bi bi-upload me-1"></i> Upload Image Now
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

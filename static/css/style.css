@@ -1,0 +1,286 @@
+/* ==========================================================================
+   DermaVision AI - Modern Healthcare & Research Design System
+   Color Theme: Blue/Purple Healthcare Palette (#2563eb / #7c3aed)
+   ========================================================================== */
+
+:root {
+    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    
+    /* Primary Gradient & Brand Colors */
+    --primary-blue: #2563eb;
+    --primary-indigo: #4f46e5;
+    --primary-purple: #7c3aed;
+    --brand-gradient: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%);
+    --brand-gradient-hover: linear-gradient(135deg, #1d4ed8 0%, #4338ca 50%, #6d28d9 100%);
+    --subtle-gradient: linear-gradient(180deg, rgba(37, 99, 235, 0.04) 0%, rgba(124, 58, 237, 0.04) 100%);
+    
+    /* Light Mode Palette */
+    --bg-body: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-card-hover: #ffffff;
+    --bg-muted: #f1f5f9;
+    --bg-glass: rgba(255, 255, 255, 0.85);
+    --border-color: #e2e8f0;
+    --border-subtle: #f1f5f9;
+    
+    /* Typography Colors */
+    --text-main: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --text-inverse: #ffffff;
+    
+    /* Status Colors */
+    --status-success: #10b981;
+    --status-warning: #f59e0b;
+    --status-danger: #ef4444;
+    --status-info: #06b6d4;
+    
+    /* Elevation Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    --shadow-brand: 0 10px 20px -5px rgba(79, 70, 229, 0.3);
+    
+    /* Radii */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+    --radius-pill: 9999px;
+}
+
+/* Dark Mode Palette */
+[data-bs-theme="dark"] {
+    --bg-body: #090d16;
+    --bg-card: #131b2e;
+    --bg-card-hover: #17223b;
+    --bg-muted: #1e293b;
+    --bg-glass: rgba(19, 27, 46, 0.85);
+    --border-color: #27354f;
+    --border-subtle: #1e293b;
+    
+    --text-main: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.45);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    --shadow-brand: 0 10px 20px -5px rgba(124, 58, 237, 0.4);
+}
+
+/* Base resets & typography */
+body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    letter-spacing: -0.01em;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+/* Top Disclaimer Banner */
+.disclaimer-banner {
+    background: linear-gradient(90deg, #dc2626 0%, #b91c1c 100%);
+    font-size: 0.8125rem;
+    letter-spacing: 0.02em;
+}
+
+/* Navbar */
+.navbar-custom {
+    background: var(--bg-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.brand-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: var(--brand-gradient);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.35);
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.9375rem;
+    padding: 0.5rem 0.85rem !important;
+    border-radius: var(--radius-pill);
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--primary-blue);
+    background-color: rgba(37, 99, 235, 0.08);
+}
+
+[data-bs-theme="dark"] .nav-link:hover, 
+[data-bs-theme="dark"] .nav-link.active {
+    color: #93c5fd;
+    background-color: rgba(59, 130, 246, 0.15);
+}
+
+/* Hero Section */
+.hero-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(37, 99, 235, 0.05) 50%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Brand Buttons */
+.btn-brand {
+    background: var(--brand-gradient);
+    color: #ffffff !important;
+    border: none;
+    font-weight: 600;
+    box-shadow: var(--shadow-brand);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-brand:hover {
+    background: var(--brand-gradient-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 24px -4px rgba(79, 70, 229, 0.45);
+}
+
+.btn-brand:active {
+    transform: translateY(0);
+}
+
+/* Modern Card Styling */
+.card-modern {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-modern:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+/* Upload Dropzone */
+.upload-dropzone-modern {
+    background: var(--bg-muted);
+    border: 2px dashed #94a3b8;
+    border-radius: var(--radius-xl);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.upload-dropzone-modern:hover, .upload-dropzone-modern.dragover {
+    border-color: var(--primary-indigo);
+    background-color: rgba(79, 70, 229, 0.06);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+/* Feature & Condition Cards */
+.condition-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.condition-card:hover {
+    border-color: var(--primary-purple);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Stepper Component */
+.step-number {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-pill);
+    background: var(--brand-gradient);
+    color: #ffffff;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+}
+
+/* History Table */
+.table-modern {
+    color: var(--text-main);
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-modern thead th {
+    background: var(--bg-muted);
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.85rem 1rem;
+}
+
+.table-modern tbody td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-card);
+    vertical-align: middle;
+}
+
+.table-modern tbody tr:hover td {
+    background-color: var(--bg-card-hover);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-muted);
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+[data-bs-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #475569;
+}

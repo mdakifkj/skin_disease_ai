@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Analyze Skin Image - DermaVision AI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-white border-bottom p-4">
+                    <h4 class="fw-bold mb-1"><i class="bi bi-cloud-arrow-up text-primary me-2"></i>Skin Lesion Image Analysis</h4>
+                    <p class="text-muted small mb-0">Upload a clear clinical skin photograph or dermatoscopic image for inference.</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('detect') }}" enctype="multipart/form-data" id="uploadForm">
+                        
+                        <!-- Drag & Drop Zone -->
+                        <div class="upload-dropzone p-5 text-center rounded-4 border border-2 border-dashed position-relative mb-4" id="dropZone">
+                            <input type="file" name="image" id="imageInput" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept=".jpg,.jpeg,.png,.webp" required>
+                            
+                            <div id="dropZonePrompt">
+                                <i class="bi bi-images display-4 text-primary opacity-75 mb-3 d-block"></i>
+                                <h6 class="fw-bold mb-1">Drag and drop your image here, or browse</h6>
+                                <p class="text-muted small mb-2">Supports JPG, PNG, WEBP (Max 16 MB)</p>
+                                <span class="btn btn-sm btn-outline-primary rounded-pill px-3">Select Image</span>
+                            </div>
+
+                            <!-- Live Image Preview Container -->
+                            <div id="previewContainer" class="d-none text-center">
+                                <img id="imagePreview" src="#" alt="Preview" class="img-fluid rounded-3 shadow-sm mb-3" style="max-height: 280px; object-fit: contain;">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill" id="removeImageBtn">
+                                        <i class="bi bi-trash me-1"></i> Remove Image
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analysis Options -->
+                        <div class="bg-light p-3 rounded-3 mb-4">
+                            <h6 class="fw-bold small text-uppercase text-muted mb-2">Analysis Pipeline Options</h6>
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" role="switch" id="gradcamSwitch" name="enable_gradcam" checked>
+                                <label class="form-check-label small" for="gradcamSwitch">
+                                    <strong>Generate Grad-CAM Explainability Heatmap</strong> (Visualizes lesion focus)
+                                </label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="severitySwitch" name="enable_severity" checked>
+                                <label class="form-check-label small" for="severitySwitch">
+                                    <strong>Run Severity Estimation Model</strong> (Evaluates lesion intensity)
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Disclaimer Confirmation -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="disclaimerCheck" required>
+                            <label class="form-check-label small text-muted" for="disclaimerCheck">
+                                I acknowledge that this tool is for <strong>educational and research purposes only</strong> and does not constitute a certified medical diagnosis.
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-semibold shadow-sm" id="submitBtn">
+                                <i class="bi bi-cpu-fill me-2"></i>Run AI Analysis
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Loading Spinner Overlay -->
+                    <div id="loadingOverlay" class="d-none text-center py-5">
+                        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <h5 class="fw-bold text-dark">Processing Image & Running Models...</h5>
+                        <p class="text-muted small">Performing image preprocessing, feature extraction, and Grad-CAM generation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

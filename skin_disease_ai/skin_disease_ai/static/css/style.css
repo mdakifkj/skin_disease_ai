@@ -1,0 +1,63 @@
+/* DermaVision AI - Custom Styling */
+:root {
+    --bs-font-sans-serif: 'Inter', system-ui, -apple-system, sans-serif;
+    --primary-color: #0d6efd;
+    --primary-dark: #0a58ca;
+}
+
+body {
+    font-family: var(--bs-font-sans-serif);
+    background-color: #f8fafc;
+    color: #334155;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+.tracking-tight {
+    letter-spacing: -0.025em;
+}
+
+.brand-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+}
+
+.disclaimer-banner {
+    letter-spacing: 0.015em;
+    font-size: 0.875rem;
+}
+
+.upload-dropzone {
+    background-color: #f8fafc;
+    border-color: #cbd5e1 !important;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.upload-dropzone:hover, .upload-dropzone.dragover {
+    background-color: #eff6ff;
+    border-color: #3b82f6 !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.hover-shadow {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-shadow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.transition {
+    transition: all 0.2s ease;
+}

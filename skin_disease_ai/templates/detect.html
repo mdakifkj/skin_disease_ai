@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Skin Image Analysis & Detection - DermaVision AI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card-modern overflow-hidden">
+                <!-- Header -->
+                <div class="p-4 border-bottom bg-muted bg-opacity-25">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="brand-icon-box flex-shrink-0">
+                            <i class="bi bi-cloud-arrow-up-fill" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold text-main mb-1">Skin Lesion Image Analysis</h4>
+                            <p class="text-muted small mb-0">Upload a clinical photograph or dermatoscopic image to run inference.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 p-md-5">
+                    <form method="POST" action="{{ url_for('detect') }}" enctype="multipart/form-data" id="uploadForm">
+                        
+                        <!-- Drag-and-Drop Area -->
+                        <div class="upload-dropzone-modern mb-4" id="dropZone" tabindex="0" role="region" aria-label="Image Upload Drop Zone">
+                            <input type="file" name="image" id="imageInput" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept=".jpg,.jpeg,.png,.webp" required aria-label="Choose skin lesion image file">
+                            
+                            <!-- Default Drop Prompt -->
+                            <div id="dropZonePrompt">
+                                <div class="brand-icon-box mx-auto mb-3" style="width: 64px; height: 64px; font-size: 1.75rem;">
+                                    <i class="bi bi-images" aria-hidden="true"></i>
+                                </div>
+                                <h5 class="fw-bold text-main mb-1">Drag and drop your skin image here</h5>
+                                <p class="text-muted small mb-3">Supports JPG, JPEG, PNG, WEBP (Maximum file size: 16 MB)</p>
+                                <span class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-semibold">
+                                    <i class="bi bi-folder2-open me-1" aria-hidden="true"></i> Browse Local Files
+                                </span>
+                            </div>
+
+                            <!-- Live Image Preview -->
+                            <div id="previewContainer" class="d-none text-center">
+                                <img id="imagePreview" src="#" alt="Selected skin lesion preview" class="img-fluid rounded-3 shadow-sm mb-2" style="max-height: 280px; object-fit: contain;">
+                                <p class="text-muted small mb-3" id="fileInfoText">sample.jpg</p>
+                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" id="removeImageBtn">
+                                    <i class="bi bi-trash3-fill me-1" aria-hidden="true"></i> Remove & Choose Another
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Analysis Pipeline Options -->
+                        <div class="card-modern p-3 mb-4 bg-muted bg-opacity-30">
+                            <h6 class="fw-bold text-main small text-uppercase mb-2">Inference Options</h6>
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" role="switch" id="gradcamSwitch" name="enable_gradcam" checked>
+                                <label class="form-check-label small text-main" for="gradcamSwitch">
+                                    <strong>Generate Grad-CAM Explainability Heatmap</strong> (Visual attention overlay)
+                                </label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="severitySwitch" name="enable_severity" checked>
+                                <label class="form-check-label small text-main" for="severitySwitch">
+                                    <strong>Run Severity Estimation Model</strong> (Evaluates condition severity)
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Disclaimer Acknowledgement Checkbox -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="disclaimerCheck" required>
+                            <label class="form-check-label small text-secondary" for="disclaimerCheck">
+                                I understand that this platform is an <strong>educational/research demonstration</strong> and not a clinical diagnosis system.
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-brand btn-lg rounded-pill" id="submitBtn">
+                                <i class="bi bi-lightning-charge-fill me-2" aria-hidden="true"></i>Run AI Analysis
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Animated Loading Overlay -->
+                    <div id="loadingOverlay" class="d-none text-center py-5">
+                        <div class="spinner-border text-primary mb-3" style="width: 3.5rem; height: 3.5rem;" role="status">
+                            <span class="visually-hidden">Analyzing image...</span>
+                        </div>
+                        <h5 class="fw-bold text-main mb-2">Running Multi-Stage AI Pipeline...</h5>
+                        <div class="text-muted small mb-3">
+                            <div id="stepValidate" class="text-muted">1. Ingesting &amp; Preprocessing Image Tensor</div>
+                            <div id="stepModel" class="text-muted">2. Evaluating Transfer Learning Classifiers</div>
+                            <div id="stepGradcam" class="text-muted">3. Computing Grad-CAM Activation Heatmaps</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}AI-Based Skin Disease Detection & Severity Prediction{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="hero-card p-4 p-md-5 mb-5">
+        <div class="row align-items-center position-relative" style="z-index: 1;">
+            <div class="col-lg-8">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">
+                    <i class="bi bi-mortarboard-fill" aria-hidden="true"></i>
+                    <span class="small fw-semibold">Academic AI/ML Research Project</span>
+                </div>
+                <h1 class="display-6 display-md-5 fw-extrabold text-main mb-3 tracking-tight">
+                    AI-Based Skin Disease Detection & Severity Prediction
+                </h1>
+                <p class="lead text-secondary mb-4 fs-6 fs-md-5">
+                    An explainable deep learning platform employing <strong>EfficientNetB0 Transfer Learning</strong>, dedicated dual-branch inference, and <strong>Grad-CAM visual localization</strong> to advance computer-assisted dermatological research.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('detect') }}" class="btn btn-brand btn-lg rounded-pill px-4">
+                        <i class="bi bi-cloud-arrow-up-fill me-2" aria-hidden="true"></i>Analyze Skin Image
+                    </a>
+                    <a href="{{ url_for('about') }}" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                        <i class="bi bi-book-half me-2" aria-hidden="true"></i>Methodology & Architecture
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 mt-4 mt-lg-0">
+                <div class="card-modern p-4 text-start">
+                    <h6 class="fw-bold text-uppercase text-muted small tracking-wide mb-3">
+                        <i class="bi bi-cpu text-primary me-2" aria-hidden="true"></i>System Status
+                    </h6>
+                    <ul class="list-unstyled mb-0 small">
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-secondary">Disease Classifier:</span>
+                            <span class="badge {% if disease_model_loaded %}bg-success{% else %}bg-warning text-dark{% endif %} px-2 py-1">
+                                {% if disease_model_loaded %}Ready / Loaded{% else %}Pending Weights{% endif %}
+                            </span>
+                        </li>
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-secondary">Severity Classifier:</span>
+                            <span class="badge {% if severity_model_loaded %}bg-success{% else %}bg-warning text-dark{% endif %} px-2 py-1">
+                                {% if severity_model_loaded %}Ready / Loaded{% else %}Pending Weights{% endif %}
+                            </span>
+                        </li>
+                        <li class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-secondary">Explainability Engine:</span>
+                            <span class="badge bg-primary px-2 py-1">Grad-CAM (Active)</span>
+                        </li>
+                        <li class="d-flex justify-content-between py-2">
+                            <span class="text-secondary">Local Database:</span>
+                            <span class="badge bg-info bg-opacity-25 text-info px-2 py-1">SQLite Persistent</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical Disclaimer Banner Card -->
+    <div class="card border-warning bg-warning bg-opacity-10 mb-5 card-modern">
+        <div class="card-body p-4">
+            <div class="d-flex gap-3 align-items-start">
+                <i class="bi bi-shield-exclamation text-warning fs-1 flex-shrink-0" aria-hidden="true"></i>
+                <div>
+                    <h5 class="fw-bold text-main mb-1">Ethical & Medical Notice</h5>
+                    <p class="text-secondary small mb-0">
+                        {{ disclaimer }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How the AI System Works Section -->
+    <div class="mb-5">
+        <div class="text-center mb-4">
+            <h3 class="fw-bold text-main">How the AI System Works</h3>
+            <p class="text-muted small">Multi-stage pipeline engineered for safe ingestion, inference, and explainability</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="card-modern h-100 p-4 text-center">
+                    <div class="step-number mb-3 mx-auto">1</div>
+                    <h6 class="fw-bold text-main mb-2">Image Validation</h6>
+                    <p class="text-muted small mb-0">MIME verification, pixel dimension bounds, and corruption integrity checks.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card-modern h-100 p-4 text-center">
+                    <div class="step-number mb-3 mx-auto">2</div>
+                    <h6 class="fw-bold text-main mb-2">Tensor Preprocessing</h6>
+                    <p class="text-muted small mb-0">Lanczos resampling to 224&times;224, RGB standardization, and float32 normalization.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card-modern h-100 p-4 text-center">
+                    <div class="step-number mb-3 mx-auto">3</div>
+                    <h6 class="fw-bold text-main mb-2">Dual-Branch AI</h6>
+                    <p class="text-muted small mb-0">EfficientNetB0 feature extraction for disease classification and severity estimation.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card-modern h-100 p-4 text-center">
+                    <div class="step-number mb-3 mx-auto">4</div>
+                    <h6 class="fw-bold text-main mb-2">Grad-CAM Overlay</h6>
+                    <p class="text-muted small mb-0">Backpropagating gradients to generate visual heatmaps of anatomical interest.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supported Dermatological Conditions -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h3 class="fw-bold text-main mb-0">Supported Conditions</h3>
+                <p class="text-muted small mb-0">7 classification target categories in the current research taxonomy</p>
+            </div>
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill">
+                7 Classes
+            </span>
+        </div>
+        <div class="row g-3">
+            {% for class_key, class_name in disease_classes.items() %}
+            <div class="col-md-6 col-lg-4">
+                <div class="condition-card h-100">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="brand-icon-box flex-shrink-0" style="width: 40px; height: 40px;">
+                            <i class="bi bi-activity" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-main mb-1">{{ class_name }}</h6>
+                            <code class="text-muted small">id: {{ class_key }}</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Technology Stack Badges -->
+    <div class="card-modern p-4 mb-4">
+        <h5 class="fw-bold text-main mb-3 text-center">Technology Stack & Architecture</h5>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill"><i class="bi bi-filetype-py text-primary me-1"></i>Python 3.12+</span>
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill"><i class="bi bi-boxes text-info me-1"></i>Flask 3.x</span>
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill"><i class="bi bi-gpu-card text-warning me-1"></i>TensorFlow / Keras</span>
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill"><i class="bi bi-layers text-purple me-1"></i>EfficientNetB0</span>
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill"><i class="bi bi-eye text-success me-1"></i>Grad-CAM</span>
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill"><i class="bi bi-database text-danger me-1"></i>SQLite / SQLAlchemy</span>
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill"><i class="bi bi-bar-chart text-primary me-1"></i>Chart.js</span>
+            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill"><i class="bi bi-bootstrap text-primary me-1"></i>Bootstrap 5.3</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

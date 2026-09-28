@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Prediction Audit History - DermaVision AI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h3 class="fw-bold text-main mb-1"><i class="bi bi-clock-history text-primary me-2" aria-hidden="true"></i>Analysis History Log</h3>
+            <p class="text-muted small mb-0">Persistent audit records of previous evaluations stored in SQLite.</p>
+        </div>
+        <a href="{{ url_for('detect') }}" class="btn btn-brand rounded-pill btn-sm px-4">
+            <i class="bi bi-plus-lg me-1" aria-hidden="true"></i> New Image Analysis
+        </a>
+    </div>
+
+    {% if records %}
+    <!-- Search & Filter Controls -->
+    <div class="card-modern p-3 mb-4 bg-muted bg-opacity-25">
+        <div class="row g-3">
+            <div class="col-md-7">
+                <div class="input-group">
+                    <span class="input-group-text bg-card border-end-0 text-muted"><i class="bi bi-search" aria-hidden="true"></i></span>
+                    <input type="text" class="form-control border-start-0" id="historySearchInput" placeholder="Search by file name or condition..." aria-label="Search history records">
+                </div>
+            </div>
+            <div class="col-md-5">
+                <select class="form-select" id="diseaseFilterSelect" aria-label="Filter by Condition">
+                    <option value="">All Predicted Conditions</option>
+                    <option value="acne">Acne Vulgaris</option>
+                    <option value="eczema">Eczema (Atopic Dermatitis)</option>
+                    <option value="fungal_infection">Fungal Infection</option>
+                    <option value="healthy">Healthy / Normal Skin</option>
+                    <option value="impetigo">Impetigo</option>
+                    <option value="psoriasis">Psoriasis</option>
+                    <option value="rosacea">Rosacea</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Table -->
+    <div class="card-modern overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-modern align-middle mb-0" id="historyTable">
+                <thead>
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Preview</th>
+                        <th>File Name</th>
+                        <th>Predicted Condition</th>
+                        <th>Confidence</th>
+                        <th>Severity</th>
+                        <th>Timestamp (UTC)</th>
+                        <th class="pe-4 text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr data-filename="{{ record.original_filename|lower }}" data-disease="{{ record.predicted_disease|lower }}">
+                        <td class="ps-4 fw-bold text-muted">#{{ record.id }}</td>
+                        <td>
+                            <img src="{{ url_for('static', filename='uploads/' + record.filename) }}" alt="Thumbnail preview of {{ record.original_filename }}" class="rounded-2 border" style="width: 48px; height: 48px; object-fit: cover;">
+                        </td>
+                        <td>
+                            <span class="text-truncate d-inline-block small fw-medium" style="max-width: 170px;" title="{{ record.original_filename }}">
+                                {{ record.original_filename }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="fw-semibold text-main">{{ record.disease_display_name or 'Pending Model' }}</span>
+                        </td>
+                        <td>
+                            {% if record.disease_confidence is not none %}
+                            <span class="badge bg-primary bg-opacity-15 text-primary border border-primary border-opacity-25 px-2 py-1">
+                                {{ (record.disease_confidence * 100) | round(1) }}%
+                            </span>
+                            {% else %}
+                            <span class="text-muted small">--</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary bg-opacity-20 text-secondary border border-secondary border-opacity-25 px-2 py-1">
+                                {{ record.severity_display_name or 'Unavailable' }}
+                            </span>
+                        </td>
+                        <td class="small text-muted">
+                            {{ record.created_at.strftime("%Y-%m-%d %H:%M") }}
+                        </td>
+                        <td class="pe-4 text-end">
+                            <a href="{{ url_for('view_result', record_id=record.id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3" aria-label="View details for record #{{ record.id }}">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Filter Empty State -->
+        <div id="noFilterResults" class="d-none text-center py-5">
+            <i class="bi bi-funnel text-muted display-6 mb-2 d-block" aria-hidden="true"></i>
+            <h6 class="fw-bold text-main">No Matching Records Found</h6>
+            <p class="text-muted small mb-0">Try clearing or adjusting your search filters.</p>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Global Empty State -->
+    <div class="card-modern text-center py-5 p-4">
+        <div class="brand-icon-box mx-auto mb-3" style="width: 64px; height: 64px; font-size: 1.75rem;">
+            <i class="bi bi-inbox" aria-hidden="true"></i>
+        </div>
+        <h5 class="fw-bold text-main">No Analysis History Found</h5>
+        <p class="text-muted small mb-4">Analyze your first clinical skin photograph to populate the database audit history.</p>
+        <a href="{{ url_for('detect') }}" class="btn btn-brand rounded-pill px-4">
+            <i class="bi bi-cloud-arrow-up-fill me-1" aria-hidden="true"></i> Analyze Image Now
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

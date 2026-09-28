@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}About & Methodology - DermaVision AI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Title -->
+            <div class="mb-5 text-center">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill mb-2">Research Documentation</span>
+                <h2 class="fw-bold">AI-Based Skin Disease Detection & Severity Prediction</h2>
+                <p class="text-secondary">Comprehensive overview of research methodology, deep learning architecture, dataset criteria, and ethical considerations.</p>
+            </div>
+
+            <!-- Medical Disclaimer Card -->
+            <div class="card border-danger bg-danger bg-opacity-10 mb-4 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-danger mb-2"><i class="bi bi-shield-slash-fill me-2"></i>Non-Medical Diagnosis Notice</h5>
+                    <p class="small text-secondary mb-0">
+                        {{ disclaimer }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Architecture Section -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3"><i class="bi bi-diagram-3 text-primary me-2"></i>System Architecture</h4>
+                    <p class="text-secondary">
+                        The architecture is designed with a modular separation of concerns spanning the frontend interface, secure ingestion pipeline, dual-branch deep learning inference, and explainability:
+                    </p>
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item px-0">
+                            <strong>1. Validation & Preprocessing:</strong> Incoming files are validated for MIME type, file size (&le;16 MB), non-corruption, and dimensions. Images are normalized to RGB float32 arrays resized to \(224 \times 224\).
+                        </li>
+                        <li class="list-group-item px-0">
+                            <strong>2. Disease Classification Branch:</strong> Uses <strong>EfficientNetB0</strong> initialized with ImageNet weights, augmented by Global Average Pooling, Batch Normalization, Dropout (0.3), and a Softmax output layer across 7 dermatological classes.
+                        </li>
+                        <li class="list-group-item px-0">
+                            <strong>3. Severity Classification Branch:</strong> Uses a dedicated 3-class classifier (Mild, Moderate, Severe) trained strictly on severity-annotated datasets to avoid conflating disease identity with pathology severity.
+                        </li>
+                        <li class="list-group-item px-0">
+                            <strong>4. Grad-CAM Explainability:</strong> Computes the gradient of the winning class score with respect to the last convolutional feature maps (<code>top_conv</code>), producing a visual localization heatmap.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Target Disease Classes Detail -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3"><i class="bi bi-collection text-primary me-2"></i>Target Disease Classes</h4>
+                    <div class="row g-3">
+                        {% for class_key, class_name in disease_classes.items() %}
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3 h-100">
+                                <h6 class="fw-bold mb-1">{{ class_name }}</h6>
+                                <p class="text-muted small mb-0">System Identifier: <code>{{ class_key }}</code></p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Severity Dataset Note -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3"><i class="bi bi-bar-chart-steps text-primary me-2"></i>Severity Dataset Requirements</h4>
+                    <p class="text-secondary small">
+                        A critical requirement in clinical machine learning is maintaining dataset integrity. Disease datasets (e.g., DermNet, ISIC) classify pathology category, not severity score. To train the severity branch, image datasets with validated clinical severity annotations (Mild, Moderate, Severe) must be placed in <code>severity_dataset/</code>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

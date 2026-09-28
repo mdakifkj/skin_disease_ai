@@ -1,0 +1,45 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+venv/
+env/
+ENV/
+.venv
+
+# Flask / DB
+instance/
+*.sqlite3
+*.db
+
+# Uploads & Generated Outputs
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Model weights (large files)
+models/disease_model/*
+!models/disease_model/.gitkeep
+models/severity_model/*
+!models/severity_model/.gitkeep
+
+# Datasets (large files)
+dataset/train/*/*
+dataset/validation/*/*
+dataset/test/*/*
+!dataset/**/.gitkeep
+
+severity_dataset/train/*/*
+severity_dataset/validation/*/*
+severity_dataset/test/*/*
+!severity_dataset/**/.gitkeep
+
+# Testing & IDEs
+.pytest_cache/
+.coverage
+htmlcov/
+.vscode/
+.idea/
+*.log

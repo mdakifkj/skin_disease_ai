@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}Analysis Results - DermaVision AI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header with Action Buttons -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-2 rounded-pill bg-primary bg-opacity-10 text-primary small fw-semibold">
+                <i class="bi bi-file-earmark-medical" aria-hidden="true"></i> Record #{{ record.id }}
+            </div>
+            <h3 class="fw-bold text-main mb-0">Diagnostic Research Summary</h3>
+            <p class="text-muted small mb-0">Evaluated on {{ record.created_at.strftime("%Y-%m-%d %H:%M:%S UTC") }} &bull; Source: {{ record.original_filename }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('detect') }}" class="btn btn-outline-primary rounded-pill btn-sm px-3 fw-semibold">
+                <i class="bi bi-arrow-repeat me-1" aria-hidden="true"></i> Analyze Another Image
+            </a>
+            <a href="{{ url_for('history') }}" class="btn btn-outline-secondary rounded-pill btn-sm px-3 fw-semibold">
+                <i class="bi bi-clock-history me-1" aria-hidden="true"></i> View History Log
+            </a>
+        </div>
+    </div>
+
+    <!-- Notice if model is not trained yet -->
+    {% if not record.is_model_trained %}
+    <div class="alert alert-info border-info card-modern p-3 mb-4" role="alert">
+        <div class="d-flex align-items-start gap-2">
+            <i class="bi bi-info-circle-fill text-info fs-5 flex-shrink-0" aria-hidden="true"></i>
+            <div class="small">
+                <strong>Pipeline Notice:</strong> Disease classification model weights have not been loaded. The application validated, preprocessed, and saved the record successfully. Run <code>python training/train_disease.py</code> after placing your dataset to activate live inference and Grad-CAM heatmaps.
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row g-4">
+        <!-- Left Column: Visual Results & Grad-CAM -->
+        <div class="col-lg-6">
+            <div class="card-modern mb-4 overflow-hidden">
+                <div class="p-3 border-bottom bg-muted bg-opacity-25 d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold text-main mb-0"><i class="bi bi-images text-primary me-2" aria-hidden="true"></i>Visual Evaluation</h6>
+                    <span class="badge bg-secondary rounded-pill">Resolution: 224&times;224</span>
+                </div>
+                <div class="p-3">
+                    <div class="row g-3">
+                        <div class="col-6 text-center">
+                            <span class="badge bg-secondary mb-2">Original Input</span>
+                            <div class="border rounded-3 p-1 bg-muted bg-opacity-30">
+                                <img src="{{ url_for('static', filename='uploads/' + record.filename) }}" class="img-fluid rounded-2" alt="Uploaded skin lesion image" style="max-height: 240px; width: 100%; object-fit: contain;">
+                            </div>
+                        </div>
+                        <div class="col-6 text-center">
+                            <span class="badge bg-primary mb-2">Grad-CAM Overlay</span>
+                            <div class="border rounded-3 p-1 bg-muted bg-opacity-30 d-flex align-items-center justify-content-center" style="min-height: 240px;">
+                                {% if record.gradcam_filename %}
+                                <img src="{{ url_for('static', filename='uploads/' + record.gradcam_filename) }}" class="img-fluid rounded-2" alt="Grad-CAM activation heatmap overlay" style="max-height: 240px; width: 100%; object-fit: contain;">
+                                {% else %}
+                                <div class="text-muted small p-3">
+                                    <i class="bi bi-eye-slash fs-3 d-block mb-2 opacity-50" aria-hidden="true"></i>
+                                    Grad-CAM activation requires trained model weights
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disease Condition Clinical Overview Card -->
+            <div class="card-modern p-4">
+                <h6 class="fw-bold text-main mb-3"><i class="bi bi-journal-medical text-primary me-2" aria-hidden="true"></i>Condition Overview &amp; Research Notes</h6>
+                <h5 class="fw-bold text-primary">{{ disease_info.title }}</h5>
+                <p class="text-secondary small mb-3">{{ disease_info.description }}</p>
+                
+                <h6 class="fw-bold small text-muted text-uppercase mb-1">Morphological Characteristics</h6>
+                <p class="text-secondary small mb-3">{{ disease_info.common_characteristics }}</p>
+                
+                <h6 class="fw-bold small text-muted text-uppercase mb-1">Dermatological Research Context</h6>
+                <p class="text-secondary small mb-0">{{ disease_info.research_notes }}</p>
+            </div>
+        </div>
+
+        <!-- Right Column: Predictions & Interactive Chart -->
+        <div class="col-lg-6">
+            <!-- Disease Prediction Card -->
+            <div class="card-modern p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <h6 class="fw-bold text-main mb-0"><i class="bi bi-activity text-primary me-2" aria-hidden="true"></i>Disease Classification</h6>
+                    <span class="badge bg-primary rounded-pill">EfficientNetB0</span>
+                </div>
+
+                <div class="mb-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Primary Predicted Condition:</span>
+                    <h3 class="fw-bold text-main mb-1">
+                        {% if record.is_model_trained %}
+                            {{ record.disease_display_name }}
+                        {% else %}
+                            Unavailable (Model Pending)
+                        {% endif %}
+                    </h3>
+                    
+                    {% if record.disease_confidence is not none %}
+                    <div class="d-flex align-items-center gap-2 mt-2">
+                        <div class="progress flex-grow-1" style="height: 10px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ record.disease_confidence * 100 }}%;" aria-valuenow="{{ record.disease_confidence * 100 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <span class="fw-bold text-primary small">{{ (record.disease_confidence * 100) | round(2) }}%</span>
+                    </div>
+                    {% else %}
+                    <span class="badge bg-secondary text-white">Confidence: Unavailable</span>
+                    {% endif %}
+                </div>
+
+                <!-- Interactive Chart.js Horizontal Bar Chart -->
+                <div class="mt-4">
+                    <h6 class="fw-bold small text-muted text-uppercase mb-3">Classification Probability Breakdown</h6>
+                    {% if top_predictions and top_predictions|length > 0 %}
+                    <div style="position: relative; height: 220px;">
+                        <canvas id="diseaseProbChart" data-chart-data='{{ top_predictions | tojson | safe }}'></canvas>
+                    </div>
+                    {% else %}
+                    <div class="p-3 text-center bg-muted rounded-3 text-muted small">
+                        Full probability distribution available upon loading trained model weights.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Severity Prediction Card -->
+            <div class="card-modern p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                    <h6 class="fw-bold text-main mb-0"><i class="bi bi-speedometer2 text-primary me-2" aria-hidden="true"></i>Severity Prediction</h6>
+                    <span class="badge bg-secondary rounded-pill">Secondary Branch</span>
+                </div>
+
+                {% if record.predicted_severity == 'unavailable' or record.predicted_severity is none or not record.is_model_trained %}
+                <div class="alert alert-warning border-warning card-modern p-3 mb-0">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-exclamation-triangle-fill text-warning fs-5 flex-shrink-0" aria-hidden="true"></i>
+                        <div class="small">
+                            <strong>Notice:</strong> {{ severity_unavailable_message }}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small text-uppercase fw-semibold">Estimated Severity:</span>
+                    <span class="badge {{ severity_info.badge_class }} px-3 py-2 fs-6">
+                        {{ record.severity_display_name }}
+                    </span>
+                </div>
+                <p class="text-secondary small mb-0">{{ severity_info.description }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Medical Disclaimer Reminder Card -->
+            <div class="card border-danger bg-danger bg-opacity-10 card-modern p-3">
+                <div class="d-flex align-items-start gap-2 text-danger small">
+                    <i class="bi bi-shield-exclamation fs-5 flex-shrink-0" aria-hidden="true"></i>
+                    <div>
+                        <strong>Mandatory Medical Notice:</strong> {{ disclaimer }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
